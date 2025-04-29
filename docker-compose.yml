@@ -1,0 +1,17 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "8081:3000"  # Map port 80 on the host to port 3000 in the container
+    volumes:
+      - .:/app     # Mount the current directory to /app in the container
+    environment:
+      - NODE_ENV=production
+    networks:
+      - app-network
+    restart: always
+
+networks:
+  app-network:
+    driver: bridge
