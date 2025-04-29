@@ -16,13 +16,14 @@ pipeline {
         }
 
         stage('Install Apache') {
-            steps {
-                sh '''
-                    sudo apt update
-                    sudo apt install -y apache2
-                '''
-            }
-        }
+    steps {
+        sh '''
+            echo "Shidhhi@123" | sudo -S apt update
+            echo "Shidhhi@123" | sudo -S apt install -y apache2
+        '''
+    }
+}
+
 
         stage('Clean Deploy Directory') {
             steps {
