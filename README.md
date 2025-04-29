@@ -49,3 +49,4 @@ To calculate a new BMI, simply update the height and weight fields and click the
 ## Feedback and Contributions
 If you have any feedback or would like to contribute to this project, please create an issue or a pull request on the GitHub repository. Your input is greatly appreciated!
 # BMI
+# BMI
