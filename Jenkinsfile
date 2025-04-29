@@ -1,37 +1,47 @@
 pipeline {
     agent any
 
+    environment {
+        DEPLOY_DIR = '/var/www/html'
+        GITHUB_REPO = 'https://github.com/siddhi709/BMI.git'
+        BRANCH = 'main'
+        CREDENTIALS_ID = 'github-credentials'
+    }
+
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/YOUR-USERNAME/BMI-Calculator.git'
+                git branch: "${BRANCH}", url: "${GITHUB_REPO}", credentialsId: "${CREDENTIALS_ID}"
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Install Apache') {
             steps {
-                sh 'sudo apt update && sudo apt install -y apache2'  // Install Apache (Optional)
+                sh '''
+                    sudo apt update
+                    sudo apt install -y apache2
+                '''
             }
         }
 
-        stage('Build') {
+        stage('Clean Deploy Directory') {
             steps {
-                echo 'No build step needed for HTML/CSS/JS static site'
+                sh 'sudo rm -rf ${DEPLOY_DIR}/*'
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy Site') {
             steps {
-                sh 'cp -r * /var/www/html/'  // Deploy to Apache server
+                sh 'sudo cp -r * ${DEPLOY_DIR}/'
             }
         }
 
         stage('Post Deployment Test') {
             steps {
                 script {
-                    def response = sh(script: "curl -o /dev/null -s -w '%{http_code}' http://localhost", returnStdout: true).trim()
-                    if (response != '200') {
-                        error("Deployment failed! HTTP Response: ${response}")
+                    def status = sh(script: "curl -s -o /dev/null -w '%{http_code}' http://localhost", returnStdout: true).trim()
+                    if (status != '200') {
+                        error("Deployment failed! HTTP status: ${status}")
                     }
                 }
             }
@@ -40,10 +50,11 @@ pipeline {
 
     post {
         success {
-            echo "Deployment Successful!"
+            echo '🎉 Deployment Successful!'
         }
         failure {
-            echo "Deployment Failed!"
+            echo '❌ Deployment Failed!'
         }
     }
 }
+
